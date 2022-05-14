@@ -1,0 +1,58 @@
+type Approval @entity {
+  id: ID!
+  owner: Bytes! # address
+  spender: Bytes! # address
+  value: BigInt! # uint256
+}
+
+type MintFee @entity {
+  id: ID!
+  feeCollector: Bytes! # address
+  fee: BigInt! # uint256
+}
+
+type Paused @entity {
+  id: ID!
+  account: Bytes! # address
+}
+
+type ReceivedMint @entity {
+  id: ID!
+  receipient: Bytes! # address
+  amount: BigInt! # uint256
+  bytesId: Bytes! # bytes32
+  transferId: String! # string
+}
+
+type RoleAdminChanged @entity {
+  id: ID!
+  role: Bytes! # bytes32
+  previousAdminRole: Bytes! # bytes32
+  newAdminRole: Bytes! # bytes32
+}
+
+type RoleGranted @entity {
+  id: ID!
+  role: Bytes! # bytes32
+  account: Bytes! # address
+  sender: Bytes! # address
+}
+
+type RoleRevoked @entity {
+  id: ID!
+  role: Bytes! # bytes32
+  account: Bytes! # address
+  sender: Bytes! # address
+}
+
+type Transfer @entity {
+  id: ID!
+  from: Bytes! # address
+  to: Bytes! # address
+  value: BigInt! # uint256
+}
+
+type Unpaused @entity {
+  id: ID!
+  account: Bytes! # address
+}
