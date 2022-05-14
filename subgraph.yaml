@@ -1,4 +1,4 @@
-specVersion: 0.0.1
+specVersion: 0.0.2
 schema:
   file: ./schema.graphql
 dataSources:
@@ -14,14 +14,15 @@ dataSources:
       language: wasm/assemblyscript
       entities:
         - Approval
-        - MintFee
+        - ContractRole
+        - Mint
+        - MintFee 
         - Paused
-        - ReceivedMint
+        - Role
         - RoleAdminChanged
-        - RoleGranted
-        - RoleRevoked
         - Transfer
         - Unpaused
+        - User
       abis:
         - name: USDR
           file: ./abis/USDR.json

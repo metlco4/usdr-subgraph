@@ -1,3 +1,14 @@
+enum RoleName {
+  ADMIN
+  BURNER
+  FEE_CONTROLLER
+  FREEZER
+  FROZEN
+  MINTER
+  PAUSER
+  WHITELIST
+}
+
 type Approval @entity {
   id: ID!
   owner: Bytes! # address
@@ -5,23 +16,30 @@ type Approval @entity {
   value: BigInt! # uint256
 }
 
+type ContractRole @entity {
+  id: ID! #role hex address
+  name: RoleName!
+}
+
+type Mint @entity {
+  id: ID!
+  recipient: User!
+  issuedAmount: BigInt!
+  transferId: String!
+  mintFee: MintFee @derivedFrom(field: "mint")
+}
+
 type MintFee @entity {
   id: ID!
-  feeCollector: Bytes! # address
-  fee: BigInt! # uint256
+  feeAmount: BigInt!
+  collector: Bytes! # address where fee was sent
+  mint: Mint
 }
 
-type Paused @entity {
+type Role @entity {
   id: ID!
-  account: Bytes! # address
-}
-
-type ReceivedMint @entity {
-  id: ID!
-  receipient: Bytes! # address
-  amount: BigInt! # uint256
-  bytesId: Bytes! # bytes32
-  transferId: String! # string
+  contractRole: ContractRole!
+  sender: Bytes!
 }
 
 type RoleAdminChanged @entity {
@@ -31,18 +49,9 @@ type RoleAdminChanged @entity {
   newAdminRole: Bytes! # bytes32
 }
 
-type RoleGranted @entity {
+type Paused @entity {
   id: ID!
-  role: Bytes! # bytes32
   account: Bytes! # address
-  sender: Bytes! # address
-}
-
-type RoleRevoked @entity {
-  id: ID!
-  role: Bytes! # bytes32
-  account: Bytes! # address
-  sender: Bytes! # address
 }
 
 type Transfer @entity {
@@ -55,4 +64,10 @@ type Transfer @entity {
 type Unpaused @entity {
   id: ID!
   account: Bytes! # address
+}
+
+type User @entity {
+  id: ID! # address of the user
+  roles: [Role!]!
+  mints: [Mint!] @derivedFrom(field: "recipient")
 }
