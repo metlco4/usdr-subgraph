@@ -20,7 +20,6 @@ import {
   Unpaused,
   User,
   Role,
-  ContractRole
 } from "../generated/schema"
 import { Address, Bytes } from "@graphprotocol/graph-ts"
 
@@ -79,32 +78,17 @@ export function handleRoleGranted(event: RoleGrantedEvent): void {
   if (!user) {
     user = new User(userId)
     user.roles = []
-    user.save()
   }
 
-  let contractRole = ContractRole.load(event.params.role.toHex())
-  let name = getRoleName(event.transaction.to, event.params.role)
-  if (!contractRole) {
-    contractRole = new ContractRole(event.params.role.toHex())
-    contractRole.name = name ? name : ""
-    contractRole.save()
-  }
+  let role = new Role(
+    event.transaction.hash.toHex() + "-" + event.transaction.index.toString()
+  )
+  role.role = event.params.role
+  role.sender = event.params.sender
+  role.action = "GRANT"
+  role.save()
 
-  // check if role already assigned
-  for (var i = 0; i < user.roles.length; i++) {
-    let role = Role.load(user.roles[i])
-    if (!role) continue
-
-    // exit if role exists
-    if (role.contractRole === contractRole.id) return
-  }
-
-  let grantedRole = new Role(event.transaction.hash.toHex() + "-" + event.transaction.index.toHex())
-  grantedRole.contractRole = contractRole.id
-  grantedRole.sender = event.params.sender
-  grantedRole.save()
-
-  user.roles.push(grantedRole.id)
+  user.roles = user.roles.concat([role.id])
   user.save()
 }
 
@@ -112,22 +96,21 @@ export function handleRoleRevoked(event: RoleRevokedEvent): void {
   let userId = event.params.account.toHexString()
   let user = User.load(userId)
 
-  let contractRole = ContractRole.load(event.params.role.toHex())
-  if (!user || !contractRole) return
-
-  for (var i = 0; i < user.roles.length; i++) {
-    let role = Role.load(user.roles[i])
-    if (!role) continue
-
-    // remove role
-    if (role.contractRole === contractRole.id) {
-      let index = user.roles.indexOf(contractRole.id)
-      if (index !== -1) {
-        user.roles.splice(index, 1)
-      }
-      user.save()
-    }
+  if (!user) {
+    user = new User(userId)
+    user.roles = []
   }
+
+  let role = new Role(
+    event.transaction.hash.toHex() + "-" + event.transaction.index.toString()
+  )
+  role.role = event.params.role
+  role.sender = event.params.sender
+  role.action = "REVOKE"
+  role.save()
+
+  user.roles = user.roles.concat([role.id])
+  user.save()
 }
 
 export function handleTransfer(event: TransferEvent): void {
@@ -146,23 +129,4 @@ export function handleUnpaused(event: UnpausedEvent): void {
   )
   entity.account = event.params.account
   entity.save()
-}
-
-function getRoleName(contractAddress: Address | null, role: Bytes): string | null {
-  if (!contractAddress) {
-    return null
-  }
-
-  let usdr = USDR.bind(contractAddress)
-
-  if (role === usdr.DEFAULT_ADMIN_ROLE()) return "ADMIN"
-  if (role === usdr.BURNER_ROLE()) return "BURNER"
-  if (role === usdr.FEE_CONTROLLER()) return "FEE_CONTROLLER"
-  if (role === usdr.FREEZER_ROLE()) return "FREEZER"
-  if (role === usdr.FROZEN_USER()) return "FROZEN"
-  if (role === usdr.MINTER_ROLE()) return "MINTER"
-  if (role === usdr.PAUSER_ROLE()) return "PAUSER"
-  if (role === usdr.WHITELIST_USER()) return "WHITELIST"
-
-  return null
 }

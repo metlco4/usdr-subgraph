@@ -1,0 +1,12 @@
+{
+  "avalanche": {
+    "USDR": {
+      "address": "0xb7e7d49b09833b4f9d171c92768c8dffcc5b2052"
+    }
+  },
+  "fuji": {
+    "USDR": {
+      "address": "0x4797990f3f54be2b142ddd8eba463041164aab42"
+    }
+  }
+}

@@ -1,24 +1,8 @@
-enum RoleName {
-  ADMIN
-  BURNER
-  FEE_CONTROLLER
-  FREEZER
-  FROZEN
-  MINTER
-  PAUSER
-  WHITELIST
-}
-
 type Approval @entity {
   id: ID!
   owner: Bytes! # address
   spender: Bytes! # address
   value: BigInt! # uint256
-}
-
-type ContractRole @entity {
-  id: ID! #role hex address
-  name: RoleName!
 }
 
 type Mint @entity {
@@ -36,10 +20,16 @@ type MintFee @entity {
   mint: Mint
 }
 
+enum RoleActionEnum {
+  GRANT
+  REVOKE
+}
+
 type Role @entity {
   id: ID!
-  contractRole: ContractRole!
+  role: Bytes!
   sender: Bytes!
+  action: RoleActionEnum!
 }
 
 type RoleAdminChanged @entity {
