@@ -1,6 +1,6 @@
 # USDR Subgraph
 
-Contains graph QL schema for USDR smart contract hosted by TheGraph to query the events and entities within the Avlanche ecosystem.
+Contains graph QL schema for USDR smart contract hosted by TheGraph to query the transaction events within the Avlanche ecosystem.
 
 Currently, there is one subgraph, but additional subgraphs can be added in this repository.
 
